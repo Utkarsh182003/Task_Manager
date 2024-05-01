@@ -4,7 +4,7 @@
 <h1>Task Manager</h1>
 </p>
 
-## [https://react-cool-todo-app.netlify.app/](https://react-cool-todo-app.netlify.app/)
+## [https://manage-all-tasks.netlify.app/](https://manage-all-tasks.netlify.app/)
 
 
 
@@ -37,7 +37,7 @@
 To install and run the project locally, follow these steps:
 
 - Clone the repository: `git clone `
-- Navigate to the project directory: `cd TodoApp`
+- Navigate to the project directory: `cd Task Manager`
 - Install the dependencies: `npm install`
 - Start the development server: `npm run dev`
 
