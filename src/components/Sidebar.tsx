@@ -15,32 +15,23 @@ import {
 import styled from "@emotion/styled";
 import {
   AddRounded,
-  AdjustRounded,
-  BugReportRounded,
   CategoryRounded,
-  DeleteForeverRounded,
   Favorite,
-  FavoriteRounded,
   FiberManualRecord,
-  GetAppRounded,
-  GitHub,
   InstallDesktopRounded,
   InstallMobileRounded,
   Logout,
   SettingsRounded,
-  StarRounded,
   TaskAltRounded,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { defaultUser } from "../constants/defaultUser";
 import { SettingsDialog } from ".";
 import logo from "../assets/logo256.png";
-import { ColorPalette, pulseAnimation, ring } from "../styles";
+import { pulseAnimation, ring } from "../styles";
 import { UserContext } from "../contexts/UserContext";
 import { iOS } from "../utils/iOS";
-import { fetchGitHubInfo } from "../services/githubApi";
 import { showToast, timeAgo } from "../utils";
-import bmcLogo from "../assets/bmc-logo.svg";
 
 export const ProfileSidebar = () => {
   const { user, setUser } = useContext(UserContext);
@@ -51,52 +42,7 @@ export const ProfileSidebar = () => {
   const [logoutConfirmationOpen, setLogoutConfirmationOpen] = useState<boolean>(false);
   const [openSettings, setOpenSettings] = useState<boolean>(false);
 
-  const [stars, setStars] = useState<number | null>(null);
-  const [lastUpdate, setLastUpdate] = useState<string | null>(null);
-  const [issuesCount, setIssuesCount] = useState<number | null>(null);
-
-  const [bmcSupporters, setBmcSupporters] = useState<number | null>(null);
-
-  useEffect(() => {
-    const fetchRepoInfo: () => Promise<void> = async () => {
-      try {
-        const { repoData, branchData } = await fetchGitHubInfo();
-        setStars(repoData.stargazers_count);
-        setLastUpdate(branchData.commit.commit.committer.date);
-        setIssuesCount(repoData.open_issues_count);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    // Function to fetch data from the Buy Me a Coffee API
-    const fetchBMC: () => Promise<void> = async () => {
-      // URL of the Buy Me a Coffee API endpoint
-      const url = "https://img.buymeacoffee.com/button-api/?&slug=maciekt07";
-      try {
-        // Fetch data from the provided URL
-        const response = await fetch(url);
-        const html = await response.text();
-        // Parse the HTML response using DOMParser
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, "text/html");
-        // Find the element containing the number of supporters
-        const supportersCountElement = doc.querySelector("text[x='226'][text-anchor='middle']");
-        if (supportersCountElement) {
-          const supportersCount = Number(supportersCountElement.textContent);
-          // In case bmc api fails
-          if (supportersCount > 0) {
-            setBmcSupporters(supportersCount);
-          }
-        } else {
-          console.log("Failed to fetch bmc api: Supporters count element not found.");
-        }
-      } catch (error) {
-        console.error("Error fetching webpage:", error);
-      }
-    };
-    fetchBMC();
-    fetchRepoInfo();
-  }, []);
+  const [lastUpdate] = useState<string | null>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -184,7 +130,7 @@ export const ProfileSidebar = () => {
             src={(user.profilePicture as string) || undefined}
             alt={user.name || "User"}
             onError={() => {
-              setUser((prevUser) => ({
+              setUser((prevUser: any) => ({
                 ...prevUser,
                 profilePicture: null,
               }));
@@ -222,8 +168,7 @@ export const ProfileSidebar = () => {
         >
           <Logo src={logo} alt="logo" />
           <h2>
-            <span style={{ color: "#7764E8" }}>Todo</span> App
-            <span style={{ color: "#7764E8" }}>.</span>
+            <span style={{ color: "#7764E8" }}>Task</span> Manager
           </h2>
         </LogoContainer>
 
@@ -235,12 +180,12 @@ export const ProfileSidebar = () => {
           sx={{ mt: "16px !important" }}
         >
           <TaskAltRounded /> &nbsp; Tasks
-          {user.tasks.filter((task) => !task.done).length > 0 && (
-            <Tooltip title={`${user.tasks.filter((task) => !task.done).length} tasks to do`}>
+          {user.tasks.filter((task: { done: any; }) => !task.done).length > 0 && (
+            <Tooltip title={`${user.tasks.filter((task: { done: any; }) => !task.done).length} tasks to do`}>
               <MenuLabel>
-                {user.tasks.filter((task) => !task.done).length > 99
+                {user.tasks.filter((task: { done: any; }) => !task.done).length > 99
                   ? "99+"
-                  : user.tasks.filter((task) => !task.done).length}
+                  : user.tasks.filter((task: { done: any; }) => !task.done).length}
               </MenuLabel>
             </Tooltip>
           )}
@@ -255,15 +200,6 @@ export const ProfileSidebar = () => {
           <AddRounded /> &nbsp; Add Task
         </StyledMenuItem>
 
-        <StyledMenuItem
-          onClick={() => {
-            n("/purge");
-            handleClose();
-          }}
-        >
-          <DeleteForeverRounded /> &nbsp; Purge Tasks
-        </StyledMenuItem>
-
         {user.settings[0].enableCategories !== undefined && user.settings[0].enableCategories && (
           <StyledMenuItem
             onClick={() => {
@@ -274,74 +210,6 @@ export const ProfileSidebar = () => {
             <CategoryRounded /> &nbsp; Categories
           </StyledMenuItem>
         )}
-
-        <StyledMenuItem
-          onClick={() => {
-            n("/import-export");
-            handleClose();
-          }}
-        >
-          <GetAppRounded /> &nbsp; Transfer
-        </StyledMenuItem>
-
-        <StyledDivider />
-        <StyledMenuItem
-          translate="no"
-          onClick={() => {
-            window.open("https://github.com/maciekt07/TodoApp");
-          }}
-        >
-          <GitHub /> &nbsp; Github{" "}
-          {stars && (
-            <Tooltip title={`${stars} stars on Github`}>
-              <MenuLabel clr="#ff9d00">
-                <span style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <StarRounded style={{ fontSize: "18px" }} />
-                  &nbsp;{stars}
-                </span>
-              </MenuLabel>
-            </Tooltip>
-          )}
-        </StyledMenuItem>
-
-        <StyledMenuItem
-          onClick={() => {
-            window.open("https://github.com/maciekt07/TodoApp/issues/new");
-          }}
-        >
-          <BugReportRounded /> &nbsp; Report Issue{" "}
-          {Boolean(issuesCount || issuesCount === 0) && (
-            <Tooltip title={`${issuesCount} open issues`}>
-              <MenuLabel clr={issuesCount && issuesCount > 0 ? ColorPalette.red : "#3bb61c"}>
-                <span style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <AdjustRounded style={{ fontSize: "18px" }} />
-                  &nbsp;
-                  {issuesCount}
-                </span>
-              </MenuLabel>
-            </Tooltip>
-          )}
-        </StyledMenuItem>
-
-        <StyledMenuItem
-          className="bmcMenu"
-          onClick={() => {
-            window.open("https://www.buymeacoffee.com/maciekt07");
-          }}
-        >
-          <BmcIcon className="bmc-icon" src={bmcLogo} /> &nbsp; Buy me a coffee{" "}
-          {bmcSupporters && (
-            <Tooltip title={`${bmcSupporters} supporters on Buy me a coffee`}>
-              <MenuLabel clr="#f93c58">
-                <span style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <FavoriteRounded style={{ fontSize: "16px" }} />
-                  &nbsp;{bmcSupporters}
-                </span>
-              </MenuLabel>
-            </Tooltip>
-          )}
-        </StyledMenuItem>
-
         <StyledDivider />
 
         {supportsPWA && !isAppInstalled && (
@@ -358,6 +226,7 @@ export const ProfileSidebar = () => {
         <StyledMenuItem onClick={handleLogoutConfirmationOpen} sx={{ color: "#ff4040 !important" }}>
           <Logout /> &nbsp; Logout
         </StyledMenuItem>
+        <StyledDivider />
 
         <ProfileOptionsBottom
           isMobile={
@@ -416,9 +285,9 @@ export const ProfileSidebar = () => {
             <span style={{ marginLeft: "6px", marginRight: "4px" }}>by</span>
             <a
               style={{ textDecoration: "none", color: "inherit" }}
-              href="https://github.com/maciekt07"
+              href="https://github.com/Utkarsh182003"
             >
-              maciekt07
+              Utkarsh
             </a>
           </CreditsContainer>
           <CreditsContainer>
@@ -570,11 +439,11 @@ const LogoContainer = styled.div`
   cursor: pointer;
 `;
 
-const BmcIcon = styled.img`
-  width: 1em;
-  height: 1em;
-  font-size: 1.5rem;
-`;
+// const BmcIcon = styled.img`
+//   width: 1em;
+//   height: 1em;
+//   font-size: 1.5rem;
+// `;
 
 const Logo = styled.img`
   width: 52px;
@@ -598,3 +467,4 @@ const CreditsContainer = styled.div`
   align-items: center;
   justify-content: center;
 `;
+

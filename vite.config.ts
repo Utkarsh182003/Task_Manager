@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
-// https://vitejs.dev/config/
+
 export default defineConfig({
   plugins: [
     react(),
@@ -11,12 +11,12 @@ export default defineConfig({
         enabled: false,
         type: "module",
       },
-      // cache all the imports
+
       registerType: "autoUpdate",
       workbox: {
         globPatterns: ["**/*"],
       },
-      // cache all the static assets in the public folder
+
       includeAssets: ["**/*"],
       manifest: {
         theme_color: "#232e58",
@@ -24,9 +24,9 @@ export default defineConfig({
         display: "standalone",
         scope: "/",
         start_url: "/",
-        short_name: "Todo App",
-        description: "Todo App",
-        name: "Todo App",
+        short_name: "Task Manager",
+        description: "Task Manager: to manage all your task",
+        name: "Task Manager",
         icons: [
           {
             src: "logo192.png",
@@ -44,7 +44,7 @@ export default defineConfig({
             type: "image/png",
           },
           {
-            src: "logoMaskable.png",
+            src: "favicon.png",
             sizes: "256x256",
             type: "image/png",
             purpose: "maskable",

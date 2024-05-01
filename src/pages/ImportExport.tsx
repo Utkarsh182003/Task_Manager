@@ -33,6 +33,7 @@ import {
   TaskManagementContainer,
 } from "../styles";
 
+
 const ImportExport = () => {
   const { user, setUser } = useContext(UserContext);
   const [selectedTasks, setSelectedTasks] = useStorageState<UUID[]>(
@@ -137,7 +138,7 @@ const ImportExport = () => {
               (task.name && task.name.length > TASK_NAME_MAX_LENGTH) ||
               (task.description && task.description.length > DESCRIPTION_MAX_LENGTH) ||
               (task.category &&
-                task.category.some((cat) => cat.name.length > CATEGORY_NAME_MAX_LENGTH));
+                task.category.some((cat: { name: string | any[]; }) => cat.name.length > CATEGORY_NAME_MAX_LENGTH));
 
             return isInvalid;
           });
@@ -162,7 +163,7 @@ const ImportExport = () => {
           const hasInvalidColors = importedTasks.some((task) => {
             return (
               (task.color && !isHexColor(task.color)) ||
-              (task.category && !task.category.every((cat) => isCategoryColorValid(cat)))
+              (task.category && !task.category.every((cat: any) => isCategoryColorValid(cat)))
             );
           });
 
@@ -185,7 +186,7 @@ const ImportExport = () => {
 
           importedTasks.forEach((task) => {
             task.category !== undefined &&
-              task.category.forEach((importedCat) => {
+              task.category.forEach((importedCat: Category) => {
                 const existingCategory = updatedCategories.find((cat) => cat.id === importedCat.id);
 
                 if (!existingCategory) {
@@ -202,17 +203,17 @@ const ImportExport = () => {
             categories: updatedCategories,
           }));
 
-          const mergedTasks = [...user.tasks, ...importedTasks];
-          const uniqueTasks = mergedTasks.reduce((acc, task) => {
-            const existingTask = acc.find((t) => t.id === task.id);
+          const mergedTasks = [...user.tasks , ...importedTasks]
+          const uniqueTasks = mergedTasks.reduce<Task[]>((acc: any[], task: { id: any; }) => {
+            const existingTask = acc.find((t: { id: any; }) => t.id === task.id);
             if (existingTask) {
-              return acc.map((t) => (t.id === task.id ? task : t));
+               return acc.map((t: { id: any; }) => (t.id === task.id ? task : t));
             } else {
-              return [...acc, task];
+               return [...acc, task];
             }
-          }, [] as Task[]);
+           }, []);
 
-          setUser((prevUser) => ({ ...prevUser, tasks: uniqueTasks }));
+          setUser((prevUser) => ({ ...prevUser, tasks: uniqueTasks}));
 
           // Prepare the list of imported task names
           const importedTaskNames = importedTasks.map((task) => task.name).join(", ");

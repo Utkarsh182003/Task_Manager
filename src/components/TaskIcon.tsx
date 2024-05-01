@@ -8,9 +8,6 @@ interface NotFoundIconProps {
   color?: string;
   variant?: "error" | "add" | "success";
 }
-/**
- * Component for displaying a svg task icon in theme color.
- */
 export const TaskIcon = ({ scale = 1, color, variant = "error" }: NotFoundIconProps) => {
   const theme = useTheme();
   const { user } = useContext(UserContext);

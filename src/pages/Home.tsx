@@ -22,6 +22,7 @@ import { AddRounded, TodayRounded, WifiOff } from "@mui/icons-material";
 import { UserContext } from "../contexts/UserContext";
 import { useResponsiveDisplay } from "../hooks/useResponsiveDisplay";
 import { useNavigate } from "react-router-dom";
+import { Task } from '../types/user';
 
 const Home = () => {
   const { user } = useContext(UserContext);
@@ -45,34 +46,33 @@ const Home = () => {
 
   useEffect(() => {
     setRandomGreeting(getRandomGreeting());
-    document.title = "Todo App";
+    document.title = "Task Manager";
 
     const interval = setInterval(() => {
       setRandomGreeting(getRandomGreeting());
-      setGreetingKey((prevKey) => prevKey + 1); // Update the key on each interval
+      setGreetingKey((prevKey) => prevKey + 1);
     }, 6000);
 
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-    const completedCount = tasks.filter((task) => task.done).length;
+    const completedCount = tasks.filter((task: { done: any; }) => task.done).length;
     setCompletedTasksCount(completedCount);
 
     const today = new Date().setHours(0, 0, 0, 0);
 
-    const dueTodayTasks = tasks.filter((task) => {
+    const dueTodayTasks = tasks.filter((task: Task): boolean => {
       if (task.deadline) {
         const taskDeadline = new Date(task.deadline).setHours(0, 0, 0, 0);
-        return taskDeadline === today && !task.done;
-      }
+      return taskDeadline === today && !task.done;
+    }
       return false;
     });
 
     setTasksWithDeadlineTodayCount(dueTodayTasks.length);
 
-    // Use Intl to format and display task names due today
-    const taskNamesDueToday = dueTodayTasks.map((task) => task.name);
+    const taskNamesDueToday = dueTodayTasks.map((task: { name: any; }) => task.name);
     setTasksDueTodayNames(taskNamesDueToday);
   }, [tasks]);
 
@@ -82,11 +82,9 @@ const Home = () => {
 
     return parts.map((part, index) => {
       if (index % 2 === 1) {
-        // It's an emoji code, render Emoji component
         const emojiCode = part.trim();
         return <Emoji key={index} size={20} unified={emojiCode} emojiStyle={emojisStyle} />;
       } else {
-        // It's regular text
         return part;
       }
     });
@@ -96,7 +94,6 @@ const Home = () => {
     if (typeof text === "string") {
       return replaceEmojiCodes(text);
     } else {
-      // It's already a ReactNode, no need to process
       return text;
     }
   };

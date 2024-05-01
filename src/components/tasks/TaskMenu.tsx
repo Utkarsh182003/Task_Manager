@@ -80,13 +80,13 @@ export const TaskMenu: React.FC<TaskMenuProps> = ({
   const n = useNavigate();
 
   const redirectToTaskDetails = () => {
-    const selectedTask = tasks.find((task) => task.id === selectedTaskId);
+    const selectedTask = tasks.find((task: { id: string | null; }) => task.id === selectedTaskId);
     const taskId = selectedTask?.id.toString().replace(".", "");
     n(`/task/${taskId}`);
   };
 
   const generateShareableLink = (taskId: UUID | null, userName: string): string => {
-    const task = tasks.find((task) => task.id === taskId);
+    const task = tasks.find((task: { id: string | null; }) => task.id === taskId);
 
     // This removes id property from link as a new identifier is generated on the share page.
     interface TaskToShare extends Omit<Task, "id"> {
@@ -124,7 +124,7 @@ export const TaskMenu: React.FC<TaskMenuProps> = ({
       navigator
         .share({
           title: "Share Task",
-          text: `Check out this task: ${tasks.find((task) => task.id === selectedTaskId)?.name}`,
+          text: `Check out this task: ${tasks.find((task: { id: string | null; }) => task.id === selectedTaskId)?.name}`,
           url: linkToShare,
         })
         .catch((error) => {
@@ -136,18 +136,18 @@ export const TaskMenu: React.FC<TaskMenuProps> = ({
   const handleMarkAsDone = () => {
     // Toggles the "done" property of the selected task
     if (selectedTaskId) {
-      const updatedTasks = tasks.map((task) => {
+      const updatedTasks = tasks.map((task: { id: string; done: any; }) => {
         if (task.id === selectedTaskId) {
           return { ...task, done: !task.done };
         }
         return task;
       });
-      setUser((prevUser) => ({
+      setUser((prevUser: any) => ({
         ...prevUser,
         tasks: updatedTasks,
       }));
 
-      const allTasksDone = updatedTasks.every((task) => task.done);
+      const allTasksDone = updatedTasks.every((task: { done: any; }) => task.done);
 
       if (allTasksDone) {
         showToast(
@@ -171,13 +171,13 @@ export const TaskMenu: React.FC<TaskMenuProps> = ({
   const handlePin = () => {
     // Toggles the "pinned" property of the selected task
     if (selectedTaskId) {
-      const updatedTasks = tasks.map((task) => {
+      const updatedTasks = tasks.map((task: { id: string; pinned: any; }) => {
         if (task.id === selectedTaskId) {
           return { ...task, pinned: !task.pinned };
         }
         return task;
       });
-      setUser((prevUser) => ({
+      setUser((prevUser: any) => ({
         ...prevUser,
         tasks: updatedTasks,
       }));
@@ -189,7 +189,7 @@ export const TaskMenu: React.FC<TaskMenuProps> = ({
       // Close the menu
       handleCloseMoreMenu();
       // Find the selected task
-      const selectedTask = tasks.find((task) => task.id === selectedTaskId);
+      const selectedTask = tasks.find((task: { id: string; }) => task.id === selectedTaskId);
       if (selectedTask) {
         // Create a duplicated task with a new ID and current date
         const duplicatedTask: Task = {
@@ -201,7 +201,7 @@ export const TaskMenu: React.FC<TaskMenuProps> = ({
         // Add the duplicated task to the existing tasks
         const updatedTasks = [...tasks, duplicatedTask];
         // Update the user object with the updated tasks
-        setUser((prevUser) => ({
+        setUser((prevUser: any) => ({
           ...prevUser,
           tasks: updatedTasks,
         }));
@@ -210,7 +210,7 @@ export const TaskMenu: React.FC<TaskMenuProps> = ({
   };
 
   const handleReadAloud = () => {
-    const selectedTask = tasks.find((task) => task.id === selectedTaskId);
+    const selectedTask = tasks.find((task: { id: string | null; }) => task.id === selectedTaskId);
     const voices = window.speechSynthesis.getVoices();
     const voice = voices.find((voice) => voice.name === settings[0].voice);
     const voiceName = voices.find((voice) => voice.name === settings[0].voice);
@@ -359,9 +359,9 @@ export const TaskMenu: React.FC<TaskMenuProps> = ({
           handleMarkAsDone();
         }}
       >
-        {tasks.find((task) => task.id === selectedTaskId)?.done ? <Close /> : <Done />}
+        {tasks.find((task: { id: string | null; }) => task.id === selectedTaskId)?.done ? <Close /> : <Done />}
         &nbsp;{" "}
-        {tasks.find((task) => task.id === selectedTaskId)?.done
+        {tasks.find((task: { id: string | null; }) => task.id === selectedTaskId)?.done
           ? "Mark as not done"
           : "Mark as done"}
       </StyledMenuItem>
@@ -372,7 +372,7 @@ export const TaskMenu: React.FC<TaskMenuProps> = ({
         }}
       >
         <PushPinRounded sx={{ textDecoration: "line-through" }} />
-        &nbsp; {tasks.find((task) => task.id === selectedTaskId)?.pinned ? "Unpin" : "Pin"}
+        &nbsp; {tasks.find((task: { id: string | null; }) => task.id === selectedTaskId)?.pinned ? "Unpin" : "Pin"}
       </StyledMenuItem>
 
       {selectedTasks.length === 0 && (
@@ -444,10 +444,10 @@ export const TaskMenu: React.FC<TaskMenuProps> = ({
               <Emoji
                 emojiStyle={emojisStyle}
                 size={32}
-                unified={tasks.find((task) => task.id === selectedTaskId)?.emoji || ""}
+                unified={tasks.find((task: { id: string | null; }) => task.id === selectedTaskId)?.emoji || ""}
               />{" "}
               {emojisStyle === EmojiStyle.NATIVE && "\u00A0 "}
-              {tasks.find((task) => task.id === selectedTaskId)?.name}
+              {tasks.find((task: { id: string | null; }) => task.id === selectedTaskId)?.name}
             </SheetHeader>
           }
         >
@@ -489,7 +489,7 @@ export const TaskMenu: React.FC<TaskMenuProps> = ({
         <DialogContent>
           <span>
             Share Task:{" "}
-            <b translate="no">{tasks.find((task) => task.id === selectedTaskId)?.name}</b>
+            <b translate="no">{tasks.find((task: { id: string | null; }) => task.id === selectedTaskId)?.name}</b>
           </span>
           <Tabs value={shareTabVal} onChange={handleTabChange} sx={{ m: "8px 0" }}>
             <StyledTab label="Link" icon={<LinkRounded />} />
@@ -551,7 +551,7 @@ export const TaskMenu: React.FC<TaskMenuProps> = ({
               <DownloadQrCodeBtn
                 variant="outlined"
                 onClick={() =>
-                  saveQRCode(tasks.find((task) => task.id === selectedTaskId)?.name || "")
+                  saveQRCode(tasks.find((task: { id: string | null; }) => task.id === selectedTaskId)?.name || "")
                 }
               >
                 <DownloadRounded /> &nbsp; Download QR Code

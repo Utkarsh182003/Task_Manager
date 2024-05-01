@@ -10,7 +10,7 @@ interface TopBarProps {
 
 /**
  * Component for displaying a top bar with a title and a back button.
- * @param {string} title - Title of page
+ * @param {string} title
  */
 export const TopBar = ({ title }: TopBarProps) => {
   const n = useNavigate();

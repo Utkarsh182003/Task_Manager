@@ -119,7 +119,7 @@ const SharePage = () => {
         });
       }
 
-      setUser((prevUser) => ({
+      setUser((prevUser: { tasks: any[]; }) => ({
         ...prevUser,
         categories: updatedCategories,
         tasks: [
@@ -144,7 +144,6 @@ const SharePage = () => {
     }
   };
 
-  // Renders the task description with optional hyperlink parsing and text highlighting.
   const renderTaskDescription = (task: Task): JSX.Element | null => {
     if (!task || !task.description) {
       return null;
@@ -158,7 +157,7 @@ const SharePage = () => {
       if (index % 2 === 0) {
         return part;
       } else {
-        // Store link part in state
+
         const url = new URL(part);
         return (
           <Tooltip title={part} key={index}>
